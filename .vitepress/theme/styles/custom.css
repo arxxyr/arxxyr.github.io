@@ -1,0 +1,40 @@
+/**
+ * VitePress 默认主题二次开发 —— 自定义样式
+ * 通过覆盖 CSS 变量调整外观;
+ * 完整变量参考:node_modules/vitepress/dist/client/theme-default/styles/vars.css
+ */
+
+/* 品牌主色(影响链接、按钮、强调文字等) */
+:root {
+  --vp-c-brand-1: #3a5ccc;
+  --vp-c-brand-2: #4a6ad6;
+  --vp-c-brand-3: #5b78e0;
+}
+
+/* 首页 hero 大标题渐变 */
+:root {
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(120deg, #3a5ccc 30%, #6a8cff);
+}
+
+/* 归档页文章列表 */
+.archive-list {
+  list-style: none;
+  padding: 0;
+}
+.archive-list li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+.archive-list li a {
+  font-weight: 500;
+}
+.archive-list .date {
+  color: var(--vp-c-text-3);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}

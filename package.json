@@ -1,0 +1,23 @@
+{
+  "name": "blog",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "个人博客 —— VitePress 默认主题 + 自定义二次开发",
+  "packageManager": "pnpm@10.33.1",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "vitepress": "^1.6.3",
+    "vue": "^3.5.13"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  }
+}
