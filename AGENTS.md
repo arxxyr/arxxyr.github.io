@@ -36,7 +36,11 @@ blog/
 ├─ .vitepress/
 │  ├─ config.ts                 # 站点 + 默认主题配置(nav / search / i18n 文案)
 │  └─ theme/                    # —— 二次开发核心 ——
-│     ├─ index.ts               # 主题入口:继承 DefaultTheme + 布局插槽 + 全局组件
+│     ├─ index.ts               # 主题入口:继承 DefaultTheme + 注册全局组件
+│     ├─ components/
+│     │  └─ Resume.vue          # 首页个人介绍组件
+│     ├─ data/
+│     │  └─ resume.ts           # 个人介绍数据(改这里填信息)
 │     └─ styles/
 │        └─ custom.css          # 覆盖 CSS 变量,自定义外观
 ├─ posts/                       # 博客文章
@@ -44,7 +48,7 @@ blog/
 │  ├─ posts.data.ts             # createContentLoader 文章数据加载器
 │  └─ hello-world.md            # 示例文章(可删)
 ├─ public/                      # 原样拷贝的静态资源(favicon、图片、CNAME 等)
-├─ index.md                     # 首页(默认主题 home 布局:hero + features)
+├─ index.md                     # 首页 = 个人介绍(layout: page + <Resume />)
 ├─ .github/workflows/
 │  └─ deploy.yml                # GitHub Pages 自动部署流水线
 ├─ .nvmrc                       # Node 版本(22)
@@ -166,8 +170,7 @@ git push -u origin master
 
 - [x] 目录结构与项目文档
 - [x] 默认主题二次开发骨架(自定义入口 + CSS + 自动归档)
-- [ ] 安装依赖(`pnpm install`)
-- [ ] 本地跑通 `pnpm dev`
-- [ ] 初始化 git 并推送到 GitHub
-- [ ] 开启 GitHub Pages
+- [x] 安装依赖、`pnpm build` 验证通过(零警告)
+- [x] 初始化 git 并推送到 GitHub(`arxxyr/arxxyr.github.io`)
+- [x] 开启 GitHub Pages(Source = GitHub Actions),已上线 https://arxxyr.github.io
 - [ ] (可选)绑定自定义域名

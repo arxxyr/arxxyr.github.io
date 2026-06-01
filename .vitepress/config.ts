@@ -21,8 +21,8 @@ export default defineConfig({
   themeConfig: {
     // 顶部导航
     nav: [
-      { text: '首页', link: '/' },
-      { text: '归档', link: '/posts/' },
+      { text: '关于', link: '/' },
+      { text: '博客', link: '/posts/' },
     ],
 
     // 本地离线全文搜索(默认主题内置 minisearch,无需第三方)
