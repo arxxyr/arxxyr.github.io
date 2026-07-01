@@ -1,6 +1,8 @@
 ---
 layout: page
-title: 关于
+title: loosqk
+titleTemplate: false
+pageClass: page-portfolio
 ---
 
-<Resume />
+<PortfolioHome />

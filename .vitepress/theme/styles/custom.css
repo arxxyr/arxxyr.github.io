@@ -1,40 +1,149 @@
 /**
- * VitePress 默认主题二次开发 —— 自定义样式
- * 通过覆盖 CSS 变量调整外观;
- * 完整变量参考:node_modules/vitepress/dist/client/theme-default/styles/vars.css
+ * 终端风全站换肤 —— 在 VitePress 默认主题之上覆盖配色、字体与导航。
+ *
+ * 思路:
+ *   1. 自托管 JetBrains Mono / IBM Plex Sans(public/fonts,无外部运行时依赖);
+ *   2. 用一套设计稿 token(--bg/--text/...)描述明暗双色,再把它们桥接到
+ *      VitePress 的 --vp-* 变量 → 文章页一并换肤;
+ *   3. 隐藏默认 .VPNav,改由 SiteNav 提供终端风导航(仍保留 VPNav 挂载以复用本地搜索)。
  */
 
-/* 品牌主色(影响链接、按钮、强调文字等) */
-:root {
-  --vp-c-brand-1: #3a5ccc;
-  --vp-c-brand-2: #4a6ad6;
-  --vp-c-brand-3: #5b78e0;
+/* ============ 字体(自托管 woff2) ============ */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-400.woff2') format('woff2');
 }
-
-/* 首页 hero 大标题渐变 */
-:root {
-  --vp-home-hero-name-color: transparent;
-  --vp-home-hero-name-background: linear-gradient(120deg, #3a5ccc 30%, #6a8cff);
-}
-
-/* 归档页文章列表 */
-.archive-list {
-  list-style: none;
-  padding: 0;
-}
-.archive-list li {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.6rem 0;
-  border-bottom: 1px solid var(--vp-c-divider);
-}
-.archive-list li a {
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
   font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-500.woff2') format('woff2');
 }
-.archive-list .date {
-  color: var(--vp-c-text-3);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-sans-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-sans-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-sans-600.woff2') format('woff2');
+}
+
+/* ============ 设计稿 token(明亮为默认,.dark 覆盖) ============ */
+:root {
+  --bg: #f4f4f3;
+  --surface: #ffffff;
+  --surface2: #ececea;
+  --text: #18181b;
+  --muted: #6c6c72;
+  --faint: #9a9aa0;
+  --border: #e2e2df;
+  --shadow: rgba(20, 20, 20, 0.07);
+  /* 终端窗口配色(明暗一致,始终深色终端) */
+  --term: #1a1a1d;
+  --termtext: #eaeaeb;
+  --termmuted: rgba(234, 234, 235, 0.5);
+
+  --font-sans: 'IBM Plex Sans', -apple-system, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', 'Noto Sans SC', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', 'PingFang SC',
+    'Microsoft YaHei', monospace;
+}
+
+.dark {
+  --bg: #0b0b0d;
+  --surface: #151517;
+  --surface2: #1d1d20;
+  --text: #eaeaec;
+  --muted: #8b8b93;
+  --faint: #5f5f66;
+  --border: #262629;
+  --shadow: rgba(0, 0, 0, 0.45);
+  --term: #050506;
+  --termtext: #eaeaeb;
+  --termmuted: rgba(234, 234, 235, 0.42);
+}
+
+/* ============ 桥接到 VitePress 变量(全站换肤) ============ */
+:root {
+  /* 背景层级 */
+  --vp-c-bg: var(--bg);
+  --vp-c-bg-alt: var(--surface);
+  --vp-c-bg-soft: var(--surface2);
+  --vp-c-bg-elv: var(--surface);
+
+  /* 文本色阶 */
+  --vp-c-text-1: var(--text);
+  --vp-c-text-2: var(--muted);
+  --vp-c-text-3: var(--faint);
+
+  /* 分割线 / 描边 */
+  --vp-c-divider: var(--border);
+  --vp-c-border: var(--border);
+  --vp-c-gutter: var(--border);
+
+  /* 中性软色(标签、软背景) */
+  --vp-c-default-soft: var(--surface2);
+  --vp-c-default-1: var(--text);
+  --vp-c-default-2: var(--muted);
+  --vp-c-default-3: var(--faint);
+
+  /* 品牌色 = 单色文本风(契合终端审美) */
+  --vp-c-brand-1: var(--text);
+  --vp-c-brand-2: var(--muted);
+  --vp-c-brand-3: var(--muted);
+  --vp-c-brand-soft: var(--surface2);
+
+  /* 字体 */
+  --vp-font-family-base: var(--font-sans);
+  --vp-font-family-mono: var(--font-mono);
+
+  /* 导航高度 = SiteNav 高度,VPContent 据此预留顶部空间、文章 TOC 据此定位 */
+  --vp-nav-height: 56px;
+}
+
+/* ============ 用 SiteNav 取代默认导航 ============ */
+/* 隐藏默认导航,但保留其挂载:本地搜索的快捷键监听与弹窗仍可用 */
+.VPNav {
+  display: none;
+}
+
+/* SiteNav 固定在顶部 → 所有断点都为内容预留其高度。
+   (默认主题仅在 ≥960px 给 .VPContent 留白,移动端会被固定导航遮住;
+   桌面端此值与默认 scoped 规则相同,不会叠加。) */
+.VPContent {
+  padding-top: var(--vp-nav-height);
+}
+
+/* ============ 文章页细节微调 ============ */
+/* 正文链接:单色 + 下划线,贴合终端审美 */
+.vp-doc a {
+  text-decoration-color: var(--border);
+  text-underline-offset: 3px;
+}
+.vp-doc a:hover {
+  text-decoration-color: var(--text);
 }

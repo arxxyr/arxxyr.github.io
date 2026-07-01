@@ -1,7 +1,7 @@
 ---
 layout: page
-title: 博客
+title: 项目
 pageClass: page-portfolio
 ---
 
-<PortfolioBlog />
+<PortfolioProjects />

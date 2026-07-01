@@ -34,21 +34,33 @@
 ```
 blog/
 ├─ .vitepress/
-│  ├─ config.ts                 # 站点 + 默认主题配置(nav / search / i18n 文案)
-│  └─ theme/                    # —— 二次开发核心 ——
-│     ├─ index.ts               # 主题入口:继承 DefaultTheme + 注册全局组件
+│  ├─ config.ts                 # 站点配置(search / i18n 文案;导航改由 SiteNav 提供)
+│  └─ theme/                    # —— 二次开发核心(终端风全站换肤) ——
+│     ├─ index.ts               # 主题入口:继承 DefaultTheme,插槽注入 SiteNav/SiteFooter
 │     ├─ components/
-│     │  └─ Resume.vue          # 首页个人介绍组件
+│     │  ├─ SiteNav.vue            # 终端风顶栏(整站固定:导航/搜索/语言/主题)
+│     │  ├─ SiteFooter.vue         # 整站页脚
+│     │  ├─ PortfolioHome.vue      # 首页:hero + 终端窗口 + 技能 + 精选项目 + 最新文章
+│     │  ├─ PortfolioProjects.vue  # 项目页
+│     │  ├─ PortfolioBlog.vue      # 博客归档页
+│     │  ├─ PostList.vue           # 文章列表(首页/博客共用)
+│     │  ├─ ProjectCard.vue        # 项目卡片(精选/完整两种变体)
+│     │  ├─ SectionHead.vue        # 首页分区小标题(~/skills 等)
+│     │  └─ PageHead.vue           # 二级页页头($ ls ~/... + 标题 + 简介)
+│     ├─ composables/
+│     │  └─ useLocale.ts        # 中英双语状态(模块级单例 + localStorage)
 │     ├─ data/
-│     │  └─ resume.ts           # 个人介绍数据(改这里填信息)
+│     │  └─ portfolio.ts        # 站点内容数据(双语;改这里填信息)
 │     └─ styles/
-│        └─ custom.css          # 覆盖 CSS 变量,自定义外观
+│        └─ custom.css          # 字体 + 设计稿 token → VitePress 变量,全站换肤
 ├─ posts/                       # 博客文章
-│  ├─ index.md                  # 归档页(用 data loader 渲染文章列表)
-│  ├─ posts.data.ts             # createContentLoader 文章数据加载器
+│  ├─ index.md                  # 博客页(layout: page + <PortfolioBlog />)
+│  ├─ posts.data.ts             # createContentLoader 文章数据加载器(含阅读时长)
 │  └─ hello-world.md            # 示例文章(可删)
 ├─ public/                      # 原样拷贝的静态资源(favicon、图片、CNAME 等)
-├─ index.md                     # 首页 = 个人介绍(layout: page + <Resume />)
+│  └─ fonts/                    # 自托管 JetBrains Mono / IBM Plex Sans(woff2)
+├─ index.md                     # 首页(layout: page + <PortfolioHome />)
+├─ projects.md                  # 项目页(layout: page + <PortfolioProjects />)
 ├─ .github/workflows/
 │  └─ deploy.yml                # GitHub Pages 自动部署流水线
 ├─ .nvmrc                       # Node 版本(22)
@@ -106,6 +118,24 @@ blog/
 > 标签页、分页、首页"最新文章"都可基于同一份 `data` 扩展。
 
 参考:VitePress 官方「[扩展默认主题](https://vitepress.dev/guide/extending-default-theme)」与「[createContentLoader](https://vitepress.dev/guide/data-loading)」。
+
+### 6.5 本站「终端风全站换肤」架构(重点)
+首页/项目/博客是按设计稿做的终端风作品集,落地方式如下:
+
+- **导航/页脚**:`theme/index.ts` 用 `layout-top` / `layout-bottom` 插槽注入 `SiteNav` / `SiteFooter`;
+  默认 `.VPNav` 在 `custom.css` 中 `display:none` 隐藏(但仍挂载,以复用本地搜索的快捷键与弹窗,
+  `SiteNav` 通过派发 ⌘K/Ctrl-K 唤起搜索)。`--vp-nav-height` 即 `SiteNav` 高度,供内容区与文章 TOC 定位。
+- **换肤**:`custom.css` 用一套设计稿 token(`--bg/--surface/--text/--muted/--border/...`,明亮为默认、`.dark` 覆盖),
+  再桥接到 VitePress 的 `--vp-c-*` 与 `--vp-font-family-*` → 文章页一并变成终端风。**改配色只动这套 token。**
+- **字体**:自托管(`public/fonts/*.woff2`,JetBrains Mono + IBM Plex Sans),`@font-face` 在 `custom.css`。
+  选择自托管而非 Google Fonts:国内可达、可移植、无外部运行时依赖。
+- **双语**:`composables/useLocale.ts` 是模块级单例(`lang` ref + localStorage),整站顶栏切换即时联动;
+  SSR/首屏按 `zh` 渲染、挂载后再恢复,避免 hydration 不一致。**仅切作品集这层界面文案,文章正文仍为中文**,
+  不动 VitePress 全站 i18n。
+- **内容数据**:`data/portfolio.ts` 是唯一数据源(双语,`I18nText = string | {zh,en}`),
+  含 `profile / socials / terminal / skills / projects / ui` 文案。**改首页/项目内容只动这里。**
+- **暗色**:复用 VitePress 自带 appearance(`useData().isDark`),`SiteNav` 主题按钮即切它;
+  主题图标用 CSS 跟随 `.dark`,避免 JS 驱动的水合闪烁。
 
 ## 7. 写作约定
 
@@ -170,6 +200,7 @@ git push -u origin master
 
 - [x] 目录结构与项目文档
 - [x] 默认主题二次开发骨架(自定义入口 + CSS + 自动归档)
+- [x] 终端风全站换肤:首页作品集 + 项目页 + 博客页,自定义终端风导航/页脚,中英双语,自托管字体
 - [x] 安装依赖、`pnpm build` 验证通过(零警告)
 - [x] 初始化 git 并推送到 GitHub(`arxxyr/arxxyr.github.io`)
 - [x] 开启 GitHub Pages(Source = GitHub Actions),已上线 https://arxxyr.github.io
