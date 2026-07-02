@@ -6,13 +6,15 @@ import { t, type I18nText, type Lang } from '../data/portfolio'
 
 const STORAGE_KEY = 'loosqk-lang'
 
-// SSR 与首屏 hydration 一律按 'zh' 渲染,挂载后再从 localStorage 恢复,避免水合不一致。
-const lang = ref<Lang>('zh')
+// 默认英文(面向国际访客):SSR 与首屏 hydration 一律按 'en' 渲染,别人打开即英文;
+// 挂载后若留有手动切换的偏好再覆盖,避免水合不一致。
+const lang = ref<Lang>('en')
 let restored = false
 
 function restore() {
   if (restored) return
   restored = true
+  // 仅在用户手动切换过、留有偏好时覆盖默认英文
   try {
     const saved = window.localStorage.getItem(STORAGE_KEY)
     if (saved === 'zh' || saved === 'en') lang.value = saved
